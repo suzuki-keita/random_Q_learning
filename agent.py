@@ -19,6 +19,7 @@ import learning
 import world
 import environment
 import graph
+import world
 
 import scipy
 import numpy
@@ -89,12 +90,60 @@ class Agent(threading.Thread):
     '''
     def loggerQtable(self, filename, policy):
         tmpdate = []
+        tmp_f = 0
+        tmp_g = 0
+        tmp_h = 0
+        tmp_i = 0
+        tmp_e = 0
+        tmp_j = 0
+        tmp_k = 0
+        tmp_l = 0
+        tmp_m = 0
+        
+        # x:i y:j a:k
         for i in range(1,world.GRID.shape[0]-1):
            for j in range(1,world.GRID.shape[1]-1):
-               for k in range(0,4):
+               #マップチップ番号は0=路,1=壁なので注意(高桑さんのデータとは違う)
+                try:
+                   tmp_f = world.GRID[j-1][i-1]
+                except IndexError:
+                    print("f is out of index")
+                try:
+                   tmp_g = world.GRID[j-1][i]
+                except IndexError:
+                    print("g is out of index")
+                try:
+                   tmp_h = world.GRID[j-1][i+1]
+                except IndexError:
+                    print("h is out of index")
+                try:
+                   tmp_i = world.GRID[j][i-1]
+                except IndexError:
+                    print("i is out of index")
+                try:
+                   tmp_e = world.GRID[j][i]
+                except IndexError:
+                    print("e is out of index")
+                try:
+                   tmp_j = world.GRID[j][i+1]
+                except IndexError:
+                    print("j is out of index")
+                try:
+                   tmp_k = world.GRID[j+1][i-1]
+                except IndexError:
+                    print("k is out of index")
+                try:
+                   tmp_l = world.GRID[j+1][i]
+                except IndexError:
+                    print("l is out of index")
+                try:
+                   tmp_m = world.GRID[j+1][i+1]
+                except IndexError:
+                    print("m is out of index")
+                for k in range(0,4):
                     #上・右・下・左・静止
-                    print("x:",i,"y:",j,"a:",k,"Q:",policy[i][j][0][0][k])
-                    tmpdate.append( [i,j,k,policy[i][j][0][0][k]] )
+                    #print("x:",i,"y:",j,"a:",k,"Q:",policy[i][j][0][0][k],tmp_e,tmp_f,tmp_g,tmp_h,tmp_i,tmp_j,tmp_k,tmp_l,tmp_m)
+                    tmpdate.append( [i,j,k,policy[i][j][0][0][k],tmp_e,tmp_f,tmp_g,tmp_h,tmp_i,tmp_j,tmp_k,tmp_l,tmp_m,world.START[0],world.START[1]] )
         with open(filename,mode="w",buffering=-1) as w:
             writer = csv.writer(w, lineterminator='\n')
             writer.writerows(tmpdate)
