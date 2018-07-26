@@ -25,6 +25,7 @@ class Graph(threading.Thread):
     def __init__(self):
         super(Graph, self).__init__()
         self.daemon = True
+        self.stop_event = threading.Event()
 
     '''
     Described following codes are execution codes in the thread.
@@ -126,3 +127,5 @@ class Graph(threading.Thread):
             time.sleep(0.1)
         plt.close()                     #Close graph window
         """
+    def stop(self):
+            self.stop_event.set()

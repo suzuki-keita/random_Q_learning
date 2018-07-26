@@ -15,9 +15,7 @@ import pygame
 from scipy import *
 
 import world
-import agent
 import learning
-import config
 
 
 '''
@@ -43,9 +41,12 @@ class Environment(threading.Thread):
 
     logging.basicConfig(format='%(levelname)s:%(thread)d:%(module)s:%(message)s', level=logging.DEBUG)
 
-    def __init__(self):
+    def __init__(self,_config,_agent):
         super(Environment, self).__init__()
         self.daemon = True
+        self.stop_event = threading.Event()
+        self.config = _config
+        self.agent = _agent
         pygame.init()
         self.screen = pygame.display.set_mode(SCR_RECT.size)   #以下、self.名称はアトリビュートを追加
         pygame.display.set_caption(u"Environment")
@@ -125,8 +126,8 @@ class Environment(threading.Thread):
                     Represantation for Transfer learning.
                     Reusing policy's action value is painted blue color.
                     '''
-                    if config.LEARNING_MODE == 2:
-                        transferValue = config.TRANSFER_RATE * self.maxQvalue( [x,y], agent.Agent.hunter1.REUSEPOLICY, 5)
+                    if self.config.LEARNING_MODE == 2:
+                        transferValue = self.config.TRANSFER_RATE * self.maxQvalue( [x,y], self.agent.hunter1.REUSEPOLICY, 5)
                         if transferValue != 0:
                             '''
                             This part is positive action value
@@ -141,7 +142,7 @@ class Environment(threading.Thread):
                             '''
                             This part is representation of the direction of maximum action value
                             '''
-                            actDirection = self.argMaxT([x, y], agent.Agent.hunter1.REUSEPOLICY, 5)
+                            actDirection = self.argMaxT([x, y], self.agent.hunter1.REUSEPOLICY, 5)
                             direction = u""
                             if actDirection == 0:
                                 direction = u"↑"
@@ -159,7 +160,7 @@ class Environment(threading.Thread):
                     Arrow painting based on the value function with action values.
                     This method used unrecommended variable referenced form Agent class like a global variables.
                     '''
-                    actionValue = self.maxQvalue( [x,y], agent.Agent.hunter1.POLICY, 5)
+                    actionValue = self.maxQvalue([x, y], self.agent.hunter1.POLICY, 5)
                     if actionValue != 0:
                         '''
                         This part is positive action value
@@ -174,7 +175,7 @@ class Environment(threading.Thread):
                         '''
                         This part is representation of the direction of maximum action value
                         '''
-                        actDirection = self.argMaxQ([x, y], agent.Agent.hunter1.POLICY, 5)
+                        actDirection = self.argMaxQ([x, y], self.agent.hunter1.POLICY, 5)
                         direction = u""
                         if actDirection == 0:
                             direction = u"↑"
@@ -214,3 +215,6 @@ class Environment(threading.Thread):
                 pygame.display.update()
 
             time.sleep(0.01)
+    
+    def stop(self):
+            self.stop_event.set()

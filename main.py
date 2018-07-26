@@ -23,13 +23,15 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)s:%(thread)d:%(module)s:%(message)s', level=logging.DEBUG)
     logging.info('Threads start')
 
+    configs = config.Config()
+
     '''
     Selecting of the required threads
     '''
-    th1 = agent.Agent();                    # Learning
-    if config.DIMENSION == 2:
-        th2 = environment.Environment();    # PyGame (2D)
-    elif config.DIMENSION == 3:
+    th1 = agent.Agent(configs)                    # Learning
+    if configs.DIMENSION == 2:
+        th2 = environment.Environment(configs,th1);    # PyGame (2D)
+    elif configs.DIMENSION == 3:
         #th3 = scope.Scope();             # PyOpenGL (3D)
         pass
     else:
@@ -43,9 +45,9 @@ if __name__ == '__main__':
     '''
 
     th1.start()
-    if config.DIMENSION == 2:
+    if configs.DIMENSION == 2:
         th2.start()
-    elif config.DIMENSION == 3:
+    elif configs.DIMENSION == 3:
         #th3.start()
         pass
     #th4.start()
@@ -55,21 +57,16 @@ if __name__ == '__main__':
     '''
     pygame.init()
     
-    while config.TERMINATE == True:
+    while configs.TERMINATE == True:
         for event in pygame.event.get():        # Input of keyboard
             if event.type == pygame.QUIT:       # PyGame quit proccess
                 pygame.quit()
-                config.TERMINATE = False
+                configs.TERMINATE = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:  # 'ESC' press, termination of the pygame
                     pygame.quit()
-                    config.TERMINATE = False
+                    configs.TERMINATE = False
                 elif event.key == pygame.K_s:     # 's' press, start or stop
-                    agent.RUNNING = not agent.RUNNING
-                elif event.key == pygame.K_t:   # 't' press, non-drawing and drawing is changed
-                    environment.DRAW_SWITCH = not environment.DRAW_SWITCH
+                    th1.RUNNING = not th1.RUNNING
         pygame.time.wait(10)
-
-
-
     logging.info('All threads are terminated')

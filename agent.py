@@ -14,7 +14,6 @@ from datetime import datetime
 
 from scipy import *
 
-import config
 import learning
 import world
 import environment
@@ -31,23 +30,21 @@ import matplotlib.gridspec as gsc
 This parameter is controlled start/stop of the simulation,
 and to cooperate the pygame's key input program in the environment module.
 '''
-RUNNING = False
-DATE = datetime.now().strftime("%Y%m%d_%H%M%S")
-POLNUM = ("%d"%config.POLICY_NUMBER)
 
 class Agent(threading.Thread):
 
-    '''
-    Agent (instance) decleration, you can add the any agent in this area.
-    '''
-    hunter1 = learning.Learning()
-
-
-    logging.basicConfig(format='%(levelname)s:%(thread)d:%(module)s:%(message)s', level=logging.DEBUG)
-
-    def __init__(self):
+    def __init__(self, _config):
         super(Agent, self).__init__()
         self.daemon = True
+        self.stop_event = threading.Event()
+        self.config = _config
+
+        self.hunter1 = learning.Learning(self.config)
+        logging.basicConfig(format='%(levelname)s:%(thread)d:%(module)s:%(message)s', level=logging.DEBUG)
+
+        self.RUNNING = False
+        self.DATE = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.POLNUM = ("%d" % self.config.POLICY_NUMBER)
 
 
     '''
@@ -158,29 +155,29 @@ class Agent(threading.Thread):
         '''
         Learning proccess of the agent.
         '''
-        while config.NEPISODES <= config.FINISH_EPISODE[num]:
-            if RUNNING == True:
+        while self.config.NEPISODES <= self.config.FINISH_EPISODE[num]:
+            if self.RUNNING == True:
                 self.hunter1.action(self.hunter1.STATE, self.hunter1.OLD_STATE, self.hunter1.POLICY, self.hunter1.REUSEPOLICY, self.hunter1.ACT)
-                config.NSTEPS = config.NSTEPS + 1
+                self.config.NSTEPS = self.config.NSTEPS + 1
 
                 if (self.hunter1.STATE == world.GOAL) == True:
-                    self.hunter1.updateQ(self.hunter1.STATE, self.hunter1.OLD_STATE, self.hunter1.POLICY, num, self.hunter1.ACT, config.REWARD_POSITIVE[num])
-                    config.STEPS.append(config.NSTEPS)          # Append to list the number of steps
-                    config.EPISODES.append(config.NEPISODES)    # Append to list the number of episodes
-                    config.NEPISODES = config.NEPISODES + 1     # Add one to number of episodes
-                    config.NSTEPS = 0                           # Set default value as 0 step
-                    config.TREWARD = config.TREWARD + config.REWARD_POSITIVE[num] # Final sum of the goal reward
-                    config.TREWARDS.append(config.TREWARD)      # Append to list the total reward
-                    config.TREWARD = 0
+                    self.hunter1.updateQ(self.hunter1.STATE, self.hunter1.OLD_STATE, self.hunter1.POLICY, num, self.hunter1.ACT, self.config.REWARD_POSITIVE[num])
+                    self.config.STEPS.append(self.config.NSTEPS)          # Append to list the number of steps
+                    self.config.EPISODES.append(self.config.NEPISODES)    # Append to list the number of episodes
+                    self.config.NEPISODES = self.config.NEPISODES + 1     # Add one to number of episodes
+                    self.config.NSTEPS = 0                           # Set default value as 0 step
+                    self.config.TREWARD = self.config.TREWARD + self.config.REWARD_POSITIVE[num] # Final sum of the goal reward
+                    self.config.TREWARDS.append(self.config.TREWARD)      # Append to list the total reward
+                    self.config.TREWARD = 0
                     self.resetWorld(self.hunter1.STATE)              # Reset the coordinates
                 elif self.hunter1.ACT[2] < 0:
-                    self.hunter1.updateQ(self.hunter1.STATE, self.hunter1.OLD_STATE, self.hunter1.POLICY, num, self.hunter1.ACT, config.REWARD_NEGATIVE[num])
-                    config.TREWARD = config.TREWARD + config.REWARD_NEGATIVE[num]
+                    self.hunter1.updateQ(self.hunter1.STATE, self.hunter1.OLD_STATE, self.hunter1.POLICY, num, self.hunter1.ACT, self.config.REWARD_NEGATIVE[num])
+                    self.config.TREWARD = self.config.TREWARD + self.config.REWARD_NEGATIVE[num]
                 else:
-                    self.hunter1.updateQ(self.hunter1.STATE, self.hunter1.OLD_STATE, self.hunter1.POLICY, num, self.hunter1.ACT, config.REWARD_ZERO)
-                    config.TREWARD = config.TREWARD + config.REWARD_ZERO
+                    self.hunter1.updateQ(self.hunter1.STATE, self.hunter1.OLD_STATE, self.hunter1.POLICY, num, self.hunter1.ACT, self.config.REWARD_ZERO)
+                    self.config.TREWARD = self.config.TREWARD + self.config.REWARD_ZERO
 
-                time.sleep(config.TIMESTEP)
+                time.sleep(self.config.TIMESTEP)
 
             else:
                 time.sleep(0.1)                                 # Sleeping time of wait for start
@@ -198,13 +195,13 @@ class Agent(threading.Thread):
 
         # Call the learning function based on selected type of learning
         # First call is Reinforcement Learning
-        if config.LEARNING_MODE == 1:
-            fileStepsRL = "./source/steps_" + POLNUM + "_" + DATE + ".csv"
-            fileQtableRL = "./source/qtable_" + POLNUM + "_" + DATE + ".csv"
+        if self.config.LEARNING_MODE == 1:
+            fileStepsRL = "./source/steps_" + self.POLNUM + "_" + self.DATE + ".csv"
+            fileQtableRL = "./source/qtable_" + self.POLNUM + "_" + self.DATE + ".csv"
             logging.info('Reinforcement learning (Source task) start')
             self.learner(0)
             logging.info('Source task is terminated')
-            self.loggerStepEpisode(fileStepsRL, config.EPISODES, config.STEPS)
+            self.loggerStepEpisode(fileStepsRL, self.config.EPISODES, self.config.STEPS)
             self.loggerQtable(fileQtableRL, self.hunter1.POLICY)
             # Declaration of subfigures with gridspec
             """
@@ -224,22 +221,24 @@ class Agent(threading.Thread):
             # Adjust to fit amoung graphs
             fig.tight_layout()
             # Loop of representation of graphs in plot window
-            MAX_NEPISODE = config.FINISH_EPISODE[0]  # Reinforcement learning
+            MAX_NEPISODE = self.config.FINISH_EPISODE[0]  # Reinforcement learning
             logging.info("MAX_NEPISODE %s",MAX_NEPISODE)
-            graph1.plot(config.EPISODES, config.STEPS)
-            graph2.plot(config.EPISODES, config.TREWARDS)
+            graph1.plot(self.config.EPISODES, self.config.STEPS)
+            graph2.plot(self.config.EPISODES, self.config.TREWARDS)
             plt.show()
             """
         # Second call is Transfer Learning
-        elif config.LEARNING_MODE == 2:
-            fileStepsTL = "./target/steps_" + POLNUM + "_" + DATE + ".csv"
-            fileQtableTL = "./target/qtable_" + POLNUM + "_" + DATE + ".csv"
+        elif self.config.LEARNING_MODE == 2:
+            fileStepsTL = "./target/steps_" + self.POLNUM + "_" + self.DATE + ".csv"
+            fileQtableTL = "./target/qtable_" + self.POLNUM + "_" + self.DATE + ".csv"
             logging.info('Transfer learning (Target task) start')
             self.learner(1)
             logging.info('Target task is terminated')
-            self.loggerStepEpisode(fileStepsTL, config.EPISODES, config.STEPS)
+            self.loggerStepEpisode(fileStepsTL, self.config.EPISODES, self.config.STEPS)
             self.loggerQtable(fileQtableTL, self.hunter1.POLICY)
         else:
             logging.warning ('mode error')
-        config.TERMINATE = False
-        
+        self.config.TERMINATE = False
+    
+    def stop(self):
+        self.stop_event.set()

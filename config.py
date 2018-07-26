@@ -6,72 +6,75 @@ Created on 2017/09/01
 
 @author: Hitoshi Kono
 '''
+class Config:
+    def __init__(self):
+        '''
+        Setup parameters of this simulation.
+        If you select the '2' as DIMENSION, grid world
+        is deployed in the environment. On the other hand
+        If '3' was selected, 3D world is deployed in the
+        environment
+        '''
 
-'''
-Setup parameters of this simulation.
-If you select the '2' as DIMENSION, grid world
-is deployed in the environment. On the other hand
-If '3' was selected, 3D world is deployed in the
-environment
-'''
-DIMENSION = 2   # 2 or 3
+        self.DIMENSION = 2   # 2 or 3
 
-'''
-Type of simulation.
-1: Reinforcement learning (Source task)
-2: Transfer learning (Target task)
-'''
-LEARNING_MODE = 1   # 1 or 2
+        '''
+        Type of simulation.
+        1: Reinforcement learning (Source task)
+        2: Transfer learning (Target task)
+        '''
+        self.LEARNING_MODE = 1   # 1 or 2
 
-'''
-Waiting time in each action (step).
-If you set this value without 0,
-Simulation speed becomes down.
-'''
-TIMESTEP = 0.0
+        '''
+        Waiting time in each action (step).
+        If you set this value without 0,
+        Simulation speed becomes down.
+        '''
+        self.TIMESTEP = 0.0
 
-'''
-System variables' declerations
-'''
-# Experimental parameters
-TERMINATE = True
+        '''
+        System variables' declerations
+        '''
+        # Experimental parameters
+        self.TERMINATE = True
 
-# List for the graphs
-NEPISODES = 1   # Do not modify
-NSTEPS = 0      # Do not modify
-TREWARD = 0     # Do not modify
-EPISODES = []
-STEPS = []
-TREWARDS = []
-# From this line, for the learning parameters
-LEARNING_RATE = []
-DISCOUNT_RATE = []
-FINISH_EPISODE = []
-BOLTZMANN_TEMP = []
-REWARD_POSITIVE = []
-REWARD_NEGATIVE = []
-REWARD_ZERO = 0
+        # List for the graphs
+        self.NEPISODES = 1   # Do not modify
+        self.NSTEPS = 0      # Do not modify
+        self.TREWARD = 0     # Do not modify
+        self.EPISODES = []
+        self.STEPS = []
+        self.TREWARDS = []
+        # From this line, for the learning parameters
+        self.LEARNING_RATE = []
+        self.DISCOUNT_RATE = []
+        self.FINISH_EPISODE = []
+        self.BOLTZMANN_TEMP = []
+        self.REWARD_POSITIVE = []
+        self.REWARD_NEGATIVE = []
+        self.REWARD_ZERO = 0
 
-'''
-Reinforcement learning parameters
-'''
-LEARNING_RATE.append(0.1)
-DISCOUNT_RATE.append(0.99)
-FINISH_EPISODE.append(500)
-BOLTZMANN_TEMP.append(0.05)
-REWARD_POSITIVE.append(1.0)     # You have to set this value not integer
-REWARD_NEGATIVE.append(0.0)     # You have to set this value not integer
+        '''
+        Reinforcement learning parameters
+        '''
+        self.LEARNING_RATE.append(0.1)
+        self.DISCOUNT_RATE.append(0.99)
+        self.FINISH_EPISODE.append(500)
+        self.BOLTZMANN_TEMP.append(0.05)
+        self.REWARD_POSITIVE.append(1.0)     # You have to set this value not integer
+        # You have to set this value not integer
+        self.REWARD_NEGATIVE.append(0.0)
 
-'''
-Transfer learning parameters
-'''
-LEARNING_RATE.append(0.1)
-DISCOUNT_RATE.append(0.99)
-FINISH_EPISODE.append(500)
-BOLTZMANN_TEMP.append(0.05)
-REWARD_POSITIVE.append(1.0)     # You have to set this value not integer
-REWARD_NEGATIVE.append(-1.0)   # You have to set this value not integer
+        '''
+        Transfer learning parameters
+        '''
+        self.LEARNING_RATE.append(0.1)
+        self.DISCOUNT_RATE.append(0.99)
+        self.FINISH_EPISODE.append(500)
+        self.BOLTZMANN_TEMP.append(0.05)
+        self.REWARD_POSITIVE.append(1.0)     # You have to set this value not integer
+        self.REWARD_NEGATIVE.append(-1.0)   # You have to set this value not integer
+        self.TRANSFER_RATE = 1.0
+        self.POLICY_NUMBER = 1
 
-TRANSFER_RATE = 1.0
 
-POLICY_NUMBER = 1

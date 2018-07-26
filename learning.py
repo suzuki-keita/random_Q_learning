@@ -11,7 +11,6 @@ import threading
 import logging
 import random
 
-import config
 import world
 import environment
 
@@ -20,31 +19,32 @@ import numpy
 
 class Learning:
 
-    logging.basicConfig(format='%(levelname)s:%(thread)d:%(module)s:%(message)s', level=logging.DEBUG)
+    def __init__(self,_config):
+        logging.basicConfig(format='%(levelname)s:%(thread)d:%(module)s:%(message)s', level=logging.DEBUG)
 
-    '''
-    Memory space declaration for Q-tables
-    In this example, thrird and fourth argument is dammy. For memmory test, we are researved 100.
-    You can ignore this 100, and normally you can put the zero in the third and fourth argument.
-    '''
-    POLICY = scipy.zeros((world.GRID.shape[0],world.GRID.shape[1],1,1,5)) # Declaration of the policy space
-    STATE = [world.START[0], world.START[1]]                            # Current coordinates (x, y)
-    OLD_STATE = [world.START[0], world.START[1]]                        # Old coordinates
-    # This list means as follow
-    # ACT[0] is current executing action number
-    # ACT[1] is latest executed action number
-    # ACT[2] is flag of can not move
-    ACT = [0, 0, 0]
-
-    '''
-    Transfer (reuse) policy declaration
-    '''
-    if config.LEARNING_MODE == 1:       # When not transfer
-        REUSEPOLICY = 0
-    elif config.LEARNING_MODE == 2:     # Which menas transfer learning is selected
-        fileTransfer = "./policies/qtable_" + "%d"%config.POLICY_NUMBER + ".npz"
-        loadingPolicy = numpy.load(fileTransfer)
-        REUSEPOLICY = loadingPolicy['savedPolicy']
+        '''
+        Memory space declaration for Q-tables
+        In this example, thrird and fourth argument is dammy. For memmory test, we are researved 100.
+        You can ignore this 100, and normally you can put the zero in the third and fourth argument.
+        '''
+        self.POLICY = scipy.zeros((world.GRID.shape[0],world.GRID.shape[1],1,1,5)) # Declaration of the policy space
+        self.STATE = [world.START[0], world.START[1]]                            # Current coordinates (x, y)
+        self.OLD_STATE = [world.START[0], world.START[1]]                        # Old coordinates
+        # This list means as follow
+        # ACT[0] is current executing action number
+        # ACT[1] is latest executed action number
+        # ACT[2] is flag of can not move
+        self.ACT = [0, 0, 0]
+        self.config = _config
+        '''
+        Transfer (reuse) policy declaration
+        '''
+        if self.config.LEARNING_MODE == 1:       # When not transfer
+            self.REUSEPOLICY = 0
+        elif self.config.LEARNING_MODE == 2:     # Which menas transfer learning is selected
+            self.fileTransfer = "./policies/qtable_" + "%d"%self.config.POLICY_NUMBER + ".npz"
+            self.loadingPolicy = numpy.load(self.fileTransfer)
+            self.REUSEPOLICY = self.loadingPolicy['savedPolicy']
 
     '''
     Execute the action based on numerical data without stay action.
@@ -115,9 +115,9 @@ class Learning:
         for n in range(0,5):
             v[n] = policy[state[0]][state[1]][0][0][n]
         for m in range(0,5):
-            total = total + scipy.exp(v[m]/config.BOLTZMANN_TEMP[0])
+            total = total + scipy.exp(v[m]/self.config.BOLTZMANN_TEMP[0])
         for l in range(0,5):
-            p[l] = (scipy.exp(v[l]/config.BOLTZMANN_TEMP[0]))/total
+            p[l] = (scipy.exp(v[l]/self.config.BOLTZMANN_TEMP[0]))/total
 
 
     '''
@@ -135,11 +135,11 @@ class Learning:
     def probabilityT(self, state, policy, reusePolicy, v, p):
         total = 0
         for n in range(0,5):
-            v[n] = policy[state[0]][state[1]][0][0][n] + config.TRANSFER_RATE * self.iTaskMap(state, n, reusePolicy)
+            v[n] = policy[state[0]][state[1]][0][0][n] + self.config.TRANSFER_RATE * self.iTaskMap(state, n, reusePolicy)
         for m in range(0,5):
-            total = total + scipy.exp(v[m]/config.BOLTZMANN_TEMP[1])
+            total = total + scipy.exp(v[m]/self.config.BOLTZMANN_TEMP[1])
         for l in range(0,5):
-            p[l] = (scipy.exp(v[l]/config.BOLTZMANN_TEMP[1]))/total
+            p[l] = (scipy.exp(v[l]/self.config.BOLTZMANN_TEMP[1]))/total
 
     '''
     Selecting of the action based on policy
@@ -157,9 +157,9 @@ class Learning:
 
         act[1] = act[0]           # Storing of executed action to old action
 
-        if config.LEARNING_MODE == 1:       # Reinforcement learning
+        if self.config.LEARNING_MODE == 1:       # Reinforcement learning
             self.probabilityQ(state, policy, v, p)
-        elif config.LEARNING_MODE == 2:     # Transfer learning
+        elif self.config.LEARNING_MODE == 2:     # Transfer learning
             self.probabilityT(state, policy, reusePolicy, v, p)
 
         c = random.random()
@@ -223,5 +223,5 @@ class Learning:
     '''
     def updateQ(self, state, old_state, policy, num, act, reward):
         maxQact = self.argMaxQ(state, policy, 5)
-        TDerror = config.DISCOUNT_RATE[num] * policy[state[0]][state[1]][0][0][maxQact] - policy[old_state[0]][old_state[1]][0][0][act[0]]
-        policy[old_state[0]][old_state[1]][0][0][act[0]] = policy[old_state[0]][old_state[1]][0][0][act[0]] + config.LEARNING_RATE[num] * (reward + TDerror)
+        TDerror = self.config.DISCOUNT_RATE[num] * policy[state[0]][state[1]][0][0][maxQact] - policy[old_state[0]][old_state[1]][0][0][act[0]]
+        policy[old_state[0]][old_state[1]][0][0][act[0]] = policy[old_state[0]][old_state[1]][0][0][act[0]] + self.config.LEARNING_RATE[num] * (reward + TDerror)
