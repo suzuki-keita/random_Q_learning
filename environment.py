@@ -45,6 +45,7 @@ class Environment(threading.Thread):
 
     def __init__(self):
         super(Environment, self).__init__()
+        self.daemon = True
         pygame.init()
         self.screen = pygame.display.set_mode(SCR_RECT.size)   #以下、self.名称はアトリビュートを追加
         pygame.display.set_caption(u"Environment")

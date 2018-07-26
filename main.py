@@ -54,6 +54,7 @@ if __name__ == '__main__':
     PyGame control with key event function
     '''
     pygame.init()
+    
     while config.TERMINATE == True:
         for event in pygame.event.get():        # Input of keyboard
             if event.type == pygame.QUIT:       # PyGame quit proccess
@@ -70,4 +71,5 @@ if __name__ == '__main__':
         pygame.time.wait(10)
 
 
-    logging.info('Alll threads are terminated')
+
+    logging.info('All threads are terminated')

@@ -47,6 +47,7 @@ class Agent(threading.Thread):
 
     def __init__(self):
         super(Agent, self).__init__()
+        self.daemon = True
 
 
     '''
@@ -183,6 +184,7 @@ class Agent(threading.Thread):
 
             else:
                 time.sleep(0.1)                                 # Sleeping time of wait for start
+        logging.info('learning finished!')
 
 
     '''
@@ -239,3 +241,5 @@ class Agent(threading.Thread):
             self.loggerQtable(fileQtableTL, self.hunter1.POLICY)
         else:
             logging.warning ('mode error')
+        config.TERMINATE = False
+        

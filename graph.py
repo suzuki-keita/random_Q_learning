@@ -24,6 +24,7 @@ class Graph(threading.Thread):
 
     def __init__(self):
         super(Graph, self).__init__()
+        self.daemon = True
 
     '''
     Described following codes are execution codes in the thread.
