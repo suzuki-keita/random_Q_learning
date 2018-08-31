@@ -99,8 +99,8 @@ class Agent(threading.Thread):
         tmp_m = 0
         
         # x:i y:j a:k
-        for i in range(1,world.GRID.shape[0]-1):
-           for j in range(1,world.GRID.shape[1]-1):
+        for i in range(1,world.GRID.shape[0]-2):
+           for j in range(1,world.GRID.shape[1]-2):
                #マップチップ番号は0=路,1=壁なので注意(高桑さんのデータとは違う)
                 try:
                    tmp_f = world.GRID[j-1][i-1]
@@ -138,7 +138,7 @@ class Agent(threading.Thread):
                    tmp_m = world.GRID[j+1][i+1]
                 except IndexError:
                     print("m is out of index")
-                for k in range(0,4):
+                for k in range(0,5):
                     #上・右・下・左・静止
                     #print("x:",i,"y:",j,"a:",k,"Q:",policy[i][j][0][0][k],tmp_e,tmp_f,tmp_g,tmp_h,tmp_i,tmp_j,tmp_k,tmp_l,tmp_m)
                     tmpdate.append( [i,j,k,policy[i][j][0][0][k],tmp_e,tmp_f,tmp_g,tmp_h,tmp_i,tmp_j,tmp_k,tmp_l,tmp_m,world.START[0],world.START[1]] )
@@ -196,8 +196,10 @@ class Agent(threading.Thread):
         # Call the learning function based on selected type of learning
         # First call is Reinforcement Learning
         if self.config.LEARNING_MODE == 1:
-            fileStepsRL = "./source/steps_" + self.POLNUM + "_" + self.DATE + ".csv"
-            fileQtableRL = "./source/qtable_" + self.POLNUM + "_" + self.DATE + ".csv"
+            fileStepsRL = "/Users/takashi/Documents/knowledge/steps/step_" + self.POLNUM + "_" + self.DATE + ".csv"
+            fileQtableRL = "/Users/takashi/Documents/knowledge/qtable/qtable_" + self.POLNUM + "_" + self.DATE + ".csv"
+            self.config.POLICY_NUMBER = self.config.POLICY_NUMBER + 1
+            self.POLNUM = ("%d" % self.config.POLICY_NUMBER)
             logging.info('Reinforcement learning (Source task) start')
             self.learner(0)
             logging.info('Source task is terminated')

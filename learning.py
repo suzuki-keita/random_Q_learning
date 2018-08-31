@@ -50,22 +50,26 @@ class Learning:
     Execute the action based on numerical data without stay action.
     '''
     def execute(self, state, old_state, num):
-        if num == 0:        # Go to up
+        if num == environment.UP:        # Go to up
             state[1] = state[1] - 1                       # Move on coordinates
-            world.GRID[ old_state[1] ][ old_state[0] ] = 0# Update the grid information in the world
-            world.GRID[ state[1]     ][ state[0]     ] = 3
-        elif num == 1:      # Go to right
+            # Update the grid information in the world
+            world.GRID[old_state[1]][old_state[0]] = environment.ROAD
+            world.GRID[state[1]][state[0]] = environment.AGT
+        elif num == environment.RIGHT:      # Go to right
             state[0] = state[0] + 1                       # Move on coordinates
-            world.GRID[ old_state[1] ][ old_state[0] ] = 0# Update the grid information in the world
-            world.GRID[ state[1]     ][ state[0]     ] = 3
-        elif num == 2:      # Go to down
+            # Update the grid information in the world
+            world.GRID[old_state[1]][old_state[0]] = environment.ROAD
+            world.GRID[state[1]][state[0]] = environment.AGT
+        elif num == environment.DOWN:      # Go to down
             state[1] = state[1] + 1                       # Move on coordinates
-            world.GRID[ old_state[1] ][ old_state[0] ] = 0# Update the grid information in the world
-            world.GRID[ state[1]     ][ state[0]     ] = 3
-        elif num == 3:      # Go to left
+            # Update the grid information in the world
+            world.GRID[old_state[1]][old_state[0]] = environment.ROAD
+            world.GRID[state[1]][state[0]] = environment.AGT
+        elif num == environment.LEFT:      # Go to left
             state[0] = state[0] - 1                       # Move on coordinates
-            world.GRID[ old_state[1] ][ old_state[0] ] = 0# Update the grid information in the world
-            world.GRID[ state[1]     ][ state[0]     ] = 3
+            # Update the grid information in the world
+            world.GRID[old_state[1]][old_state[0]] = environment.ROAD
+            world.GRID[state[1]][state[0]] = environment.AGT
 
     '''
     Aaction function with collision check with wall and obstacles.
@@ -76,31 +80,31 @@ class Learning:
         old_state[0] = state[0]
         old_state[1] = state[1]
         # Action select statements
-        if num == 0:        # Go to up
+        if num == environment.UP:        # Go to up
             if (world.GRID[(state[1]-1)][state[0]] == environment.ROAD or world.GRID[(state[1]-1)][state[0]] == environment.GOAL):
                 self.execute(state, old_state, num)
                 return 0
             else:           # Collision
                 return -1
-        elif num == 1:      # Go to right
+        elif num == environment.RIGHT:      # Go to right
             if (world.GRID[state[1]][(state[0]+1)] == environment.ROAD or world.GRID[state[1]][(state[0]+1)] == environment.GOAL):
                 self.execute(state, old_state, num)
                 return 0
             else:           # Collision
                 return -1
-        elif num == 2:      # Go to down
+        elif num == environment.DOWN:      # Go to down
             if (world.GRID[(state[1]+1)][state[0]] == environment.ROAD or world.GRID[(state[1]+1)][state[0]] == environment.GOAL):
                 self.execute(state, old_state, num)
                 return 0
             else:           # Collision
                 return -1
-        elif num == 3:      # Go to left
+        elif num == environment.LEFT:      # Go to left
             if (world.GRID[state[1]][(state[0]-1)] == environment.ROAD or world.GRID[state[1]][(state[0]-1)] == environment.GOAL):
                 self.execute(state, old_state, num)
                 return 0
             else:           # Collision
                 return -1
-        elif num == 4:      # Go to stay
+        elif num == environment.STOP:      # Go to stay
             return 0
         else:               # Go to stay
             return 0
@@ -164,23 +168,23 @@ class Learning:
 
         c = random.random()
         if c >= 0.0 and c < p[0]:
-            ret = self.do_act(state, old_state, 0)  # Go to up
-            act[0] = 0
+            ret = self.do_act(state, old_state, environment.UP)  # Go to up
+            act[0] = environment.UP
         elif c >= p[0] and c < (p[0]+p[1]):
-            ret = self.do_act(state, old_state, 1)  # Go to right
-            act[0] = 1
+            ret = self.do_act(state, old_state, environment.RIGHT)  # Go to right
+            act[0] = environment.RIGHT
         elif c >= (p[0]+p[1]) and c < (p[0]+p[1]+p[2]):
-            ret = self.do_act(state, old_state, 2)  # Go to down
-            act[0] = 2
+            ret = self.do_act(state, old_state, environment.DOWN)  # Go to down
+            act[0] = environment.DOWN
         elif c >= (p[0]+p[1]+p[2]) and c < (p[0]+p[1]+p[2]+p[3]):
-            ret = self.do_act(state, old_state, 3)  # Go to left
-            act[0] = 3
+            ret = self.do_act(state, old_state, environment.LEFT)  # Go to left
+            act[0] = environment.LEFT
         elif c >= (p[0]+p[1]+p[2]+p[3]) and c <= (p[0]+p[1]+p[2]+p[3]+p[4]):
-            ret = self.do_act(state, old_state, 4)  # Stay
-            act[0] = 4
+            ret = self.do_act(state, old_state, environment.STOP)  # Stay
+            act[0] = environment.STOP
         else:
-            ret = self.do_act(state, old_state, 4)  # Stay (for Error)
-            act[0] = 4
+            ret = self.do_act(state, old_state, environment.STOP)  # Stay (for Error)
+            act[0] = environment.STOP
 
         '''
         Reflexive call of action function when the agent can not move.

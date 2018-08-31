@@ -25,11 +25,18 @@ CS = 25                             # Constant number, grid size and window size
 SCR_X = world.GRID.shape[1] * CS    # column
 SCR_Y = world.GRID.shape[0] * CS    # row
 SCR_RECT = pygame.Rect(0,0,SCR_X,SCR_Y)    # Rect(left,top,width,height)
-ROAD = 0    #  Identification number of Road in the world
-WALL = 1    #  Identification number of Wall or Obstacles in the world
-GOAL = 2    #  Identification number of Goal in the world
-AGT = 3     #  Identification number of Agent in the world
+START = 0
 
+GOAL = 1
+ROAD = 2
+WALL = 3
+AGT = 4
+
+LEFT = 3
+RIGHT = 1
+UP = 0
+DOWN = 2
+STOP = 4
 
 '''
 Control paramenter from main module via a PyGame event function
@@ -144,13 +151,13 @@ class Environment(threading.Thread):
                             '''
                             actDirection = self.argMaxT([x, y], self.agent.hunter1.REUSEPOLICY, 5)
                             direction = u""
-                            if actDirection == 0:
+                            if actDirection == UP:
                                 direction = u"↑"
-                            elif actDirection == 1:
+                            elif actDirection == RIGHT:
                                 direction = u"→"
-                            elif actDirection == 2:
+                            elif actDirection == DOWN:
                                 direction = u"↓"
-                            elif actDirection == 3:
+                            elif actDirection == LEFT:
                                 direction = u"←"
                             else:
                                 direction = u""
@@ -177,13 +184,13 @@ class Environment(threading.Thread):
                         '''
                         actDirection = self.argMaxQ([x, y], self.agent.hunter1.POLICY, 5)
                         direction = u""
-                        if actDirection == 0:
+                        if actDirection == UP:
                             direction = u"↑"
-                        elif actDirection == 1:
+                        elif actDirection == RIGHT:
                             direction = u"→"
-                        elif actDirection == 2:
+                        elif actDirection == DOWN:
                             direction = u"↓"
-                        elif actDirection == 3:
+                        elif actDirection == LEFT:
                             direction = u"←"
                         else:
                             direction = u""
