@@ -128,12 +128,20 @@ class Make_maze:
                 self.maze[x][y] = environment.ROAD
                 break
     
-    def GetGrid(self):
-        while(True):
-            x = random.randrange(1, SIZE-1)
-            y = random.randrange(1, SIZE-1)
-            if self.maze[x][y] == environment.ROAD:
-                return x, y
+    def GetGrid(self,_length = 0,_x = 0,_y = 0):
+        if _length == 0:
+            while(True):
+                x = random.randrange(1, SIZE-1)
+                y = random.randrange(1, SIZE-1)
+                if self.maze[x][y] == environment.ROAD:
+                    return x, y
+        else:
+            while(True):
+                x = random.randrange(1, SIZE-1)
+                y = random.randrange(1, SIZE-1)
+                l = abs( (_x - x) * (_x - x) + (_y - y) * (_y - y) )
+                if l >= _length and self.maze[x][y] == environment.ROAD:
+                    return x, y
 
     def IsExtendingWall(self, x, y):
         #指定のマスが現在拡張中の壁ならば1,そうでなければ0を返す。
@@ -151,14 +159,17 @@ class Make_maze:
         logging.basicConfig(format='%(levelname)s:%(thread)d:%(module)s:%(message)s', level=logging.DEBUG)
         logging.info("start_grid:[%i,%i]", self.start_grid[0], self.start_grid[1])
         logging.info("goal_grid:[%i,%i]", self.goal_grid[0], self.goal_grid[1])
-        debug_array = np.zeros((SIZE, SIZE), dtype=int)
-
-        for x in range(1, SIZE):
-            for y in range(1, SIZE):
+        maze_map = ""
+        for y in range(1, SIZE):
+            for x in range(1, SIZE):
                 if self.maze[x][y] == environment.WALL:
-                    debug_array[x][y] = 1
+                    maze_map += "■ "
+                elif x == self.start_grid[0] and y == self.start_grid[1]:
+                    maze_map += "\033[33mS\033[0m "
+                elif x == self.goal_grid[0] and y == self.goal_grid[1]:
+                    maze_map += "\033[34mG\033[0m "
                 else:
-                    debug_array[x][y] = 0
-
-        logging.info("\n%s",debug_array)
+                    maze_map += "□ "
+            maze_map += "\n"
+        logging.info("\n%s", maze_map)
         

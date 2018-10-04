@@ -10,6 +10,7 @@ import time
 import threading
 import logging
 import csv
+import sys
 from datetime import datetime
 
 from scipy import *
@@ -105,44 +106,44 @@ class Agent(threading.Thread):
                 try:
                    tmp_f = world.GRID[j-1][i-1]
                 except IndexError:
-                    print("f is out of index")
+                    logging.info("f is out of index")
                 try:
                    tmp_g = world.GRID[j-1][i]
                 except IndexError:
-                    print("g is out of index")
+                    logging.info("g is out of index")
                 try:
                    tmp_h = world.GRID[j-1][i+1]
                 except IndexError:
-                    print("h is out of index")
+                    logging.info("h is out of index")
                 try:
                    tmp_i = world.GRID[j][i-1]
                 except IndexError:
-                    print("i is out of index")
+                    logging.info("i is out of index")
                 try:
                    tmp_e = world.GRID[j][i]
                 except IndexError:
-                    print("e is out of index")
+                    logging.info("e is out of index")
                 try:
                    tmp_j = world.GRID[j][i+1]
                 except IndexError:
-                    print("j is out of index")
+                    logging.info("j is out of index")
                 try:
                    tmp_k = world.GRID[j+1][i-1]
                 except IndexError:
-                    print("k is out of index")
+                    logging.info("k is out of index")
                 try:
                    tmp_l = world.GRID[j+1][i]
                 except IndexError:
-                    print("l is out of index")
+                    logging.info("l is out of index")
                 try:
                    tmp_m = world.GRID[j+1][i+1]
                 except IndexError:
-                    print("m is out of index")
+                    logging.info("m is out of index")
                 for k in range(0,5):
                     #上・右・下・左・静止
-                    #print("x:",i,"y:",j,"a:",k,"Q:",policy[i][j][0][0][k],tmp_e,tmp_f,tmp_g,tmp_h,tmp_i,tmp_j,tmp_k,tmp_l,tmp_m)
+                    #logging.info("x:",i,"y:",j,"a:",k,"Q:",policy[i][j][0][0][k],tmp_e,tmp_f,tmp_g,tmp_h,tmp_i,tmp_j,tmp_k,tmp_l,tmp_m)
                     tmpdate.append( [i,j,k,policy[i][j][0][0][k],tmp_e,tmp_f,tmp_g,tmp_h,tmp_i,tmp_j,tmp_k,tmp_l,tmp_m,world.START[0],world.START[1]] )
-        with open(filename,mode="w",buffering=-1) as w:
+        with open(str(filename), mode="w", buffering=-1) as w:
             writer = csv.writer(w, lineterminator='\n')
             writer.writerows(tmpdate)
         return 1
@@ -164,6 +165,12 @@ class Agent(threading.Thread):
                     self.hunter1.updateQ(self.hunter1.STATE, self.hunter1.OLD_STATE, self.hunter1.POLICY, num, self.hunter1.ACT, self.config.REWARD_POSITIVE[num])
                     self.config.STEPS.append(self.config.NSTEPS)          # Append to list the number of steps
                     self.config.EPISODES.append(self.config.NEPISODES)    # Append to list the number of episodes
+
+                    #Learning progress
+                    self.progress = (float(self.config.NEPISODES) / float(self.config.FINISH_EPISODE[num])) * 100.0
+                    sys.stdout.write("\rLearning..... " + str(self.progress) + "% EPISODE:" + str(self.config.NEPISODES) + " STEP:" + str(self.config.NSTEPS) + "     ")
+                    sys.stdout.flush()
+
                     self.config.NEPISODES = self.config.NEPISODES + 1     # Add one to number of episodes
                     self.config.NSTEPS = 0                           # Set default value as 0 step
                     self.config.TREWARD = self.config.TREWARD + self.config.REWARD_POSITIVE[num] # Final sum of the goal reward
@@ -196,15 +203,16 @@ class Agent(threading.Thread):
         # Call the learning function based on selected type of learning
         # First call is Reinforcement Learning
         if self.config.LEARNING_MODE == 1:
-            fileStepsRL = "/Users/takashi/Documents/knowledge/steps/step_" + self.POLNUM + "_" + self.DATE + ".csv"
-            fileQtableRL = "/Users/takashi/Documents/knowledge/qtable/qtable_" + self.POLNUM + "_" + self.DATE + ".csv"
+            fileStepsRL = r"" + self.config.Steps_filename + self.POLNUM + "_" + self.DATE + ".csv"
+            fileQtableRL = r"" + self.config.Qtable_filename + self.POLNUM + "_" + self.DATE + ".csv"
+            logging.info("filename:" + fileQtableRL)
             self.config.POLICY_NUMBER = self.config.POLICY_NUMBER + 1
             self.POLNUM = ("%d" % self.config.POLICY_NUMBER)
             logging.info('Reinforcement learning (Source task) start')
             self.learner(0)
             logging.info('Source task is terminated')
-            self.loggerStepEpisode(fileStepsRL, self.config.EPISODES, self.config.STEPS)
-            self.loggerQtable(fileQtableRL, self.hunter1.POLICY)
+            self.loggerStepEpisode(str(fileStepsRL), self.config.EPISODES, self.config.STEPS)
+            self.loggerQtable(str(fileQtableRL), self.hunter1.POLICY)
             # Declaration of subfigures with gridspec
             """
             graphname = "./source/graphs_" + DATE + ".png"
@@ -236,8 +244,8 @@ class Agent(threading.Thread):
             logging.info('Transfer learning (Target task) start')
             self.learner(1)
             logging.info('Target task is terminated')
-            self.loggerStepEpisode(fileStepsTL, self.config.EPISODES, self.config.STEPS)
-            self.loggerQtable(fileQtableTL, self.hunter1.POLICY)
+            self.loggerStepEpisode(str(fileStepsTL), self.config.EPISODES, self.config.STEPS)
+            self.loggerQtable(str(fileQtableTL), self.hunter1.POLICY)
         else:
             logging.warning ('mode error')
         self.config.TERMINATE = False

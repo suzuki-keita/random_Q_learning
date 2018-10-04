@@ -8,6 +8,20 @@ Created on 2017/09/01
 '''
 class Config:
     def __init__(self):
+
+        '''
+        number of run
+        '''
+
+        self.EPOCH = 10
+
+        '''
+        Save to CSV file
+        '''
+        
+        self.Steps_filename = "/Users/takashi/Documents/knowledge/steps_1/step_"
+        self.Qtable_filename = "/Users/takashi/Documents/knowledge/qtable_1/qtable_"
+
         '''
         Setup parameters of this simulation.
         If you select the '2' as DIMENSION, grid world

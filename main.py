@@ -28,7 +28,9 @@ if __name__ == '__main__':
     
     if DEBUG_MODE == 0:
         logging.info('MAIN_MODE!')
-        for i in range(1,1000):
+        epoch = config.Config().EPOCH
+        logging.info("EPOCH:" + str(epoch))
+        for i in range(1, epoch):
             mazes = make_maze.Make_maze()
             configs = config.Config()
 
