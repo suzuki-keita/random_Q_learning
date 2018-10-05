@@ -13,9 +13,10 @@ import numpy as np
 import sys
 import logging
 import environment
+import world
 
-SIZE = 11  # maze size (automatically plus 2 of wall)
-BREAK = 11  # break wall of maze
+SIZE = world.MAZE_SIZE
+BREAK = world.BREAK_WALL
 
 class Make_maze:
     def __init__(self):
@@ -134,14 +135,14 @@ class Make_maze:
                 x = random.randrange(1, SIZE-1)
                 y = random.randrange(1, SIZE-1)
                 if self.maze[x][y] == environment.ROAD:
-                    return x, y
+                    return y, x
         else:
             while(True):
                 x = random.randrange(1, SIZE-1)
                 y = random.randrange(1, SIZE-1)
                 l = abs( (_x - x) * (_x - x) + (_y - y) * (_y - y) )
                 if l >= _length and self.maze[x][y] == environment.ROAD:
-                    return x, y
+                    return y, x
 
     def IsExtendingWall(self, x, y):
         #指定のマスが現在拡張中の壁ならば1,そうでなければ0を返す。
@@ -162,7 +163,7 @@ class Make_maze:
         maze_map = ""
         for y in range(1, SIZE):
             for x in range(1, SIZE):
-                if self.maze[x][y] == environment.WALL:
+                if self.maze[y][x] == environment.WALL:
                     maze_map += "■ "
                 elif x == self.start_grid[0] and y == self.start_grid[1]:
                     maze_map += "\033[33mS\033[0m "
