@@ -15,7 +15,7 @@ the kind of the learning.
 You must be set the coordinates based on window coordinates
 '''
 MAZE_SIZE = 11  # maze size (automatically plus 2 of wall)
-BREAK_WALL = 11  # break wall of maze
+BREAK_WALL = 8  # break wall of maze
 START = [11,1]
 GOAL = [1,11]
 

@@ -63,7 +63,7 @@ class Make_maze:
         self.start_grid[0] = tmp[0]
         self.start_grid[1] = tmp[1]
         
-        tmp = self.GetGrid()
+        tmp = self.GetGrid(0,self.start_grid[0],self.start_grid[1])
         self.goal_grid[0] = tmp[0]
         self.goal_grid[1] = tmp[1]        
         
@@ -134,14 +134,14 @@ class Make_maze:
             while(True):
                 x = random.randrange(1, SIZE-1)
                 y = random.randrange(1, SIZE-1)
-                if self.maze[x][y] == environment.ROAD:
+                if x != _x and y != _y and self.maze[x][y] == environment.ROAD:
                     return y, x
         else:
             while(True):
                 x = random.randrange(1, SIZE-1)
                 y = random.randrange(1, SIZE-1)
                 l = abs( (_x - x) * (_x - x) + (_y - y) * (_y - y) )
-                if l >= _length and self.maze[x][y] == environment.ROAD:
+                if x != _x and y != _y and l >= _length and self.maze[x][y] == environment.ROAD:
                     return y, x
 
     def IsExtendingWall(self, x, y):
@@ -161,8 +161,8 @@ class Make_maze:
         logging.info("start_grid:[%i,%i]", self.start_grid[0], self.start_grid[1])
         logging.info("goal_grid:[%i,%i]", self.goal_grid[0], self.goal_grid[1])
         maze_map = ""
-        for y in range(1, SIZE):
-            for x in range(1, SIZE):
+        for y in range(0, SIZE+2):
+            for x in range(0, SIZE+2):
                 if self.maze[y][x] == environment.WALL:
                     maze_map += "■ "
                 elif x == self.start_grid[0] and y == self.start_grid[1]:
@@ -173,4 +173,3 @@ class Make_maze:
                     maze_map += "□ "
             maze_map += "\n"
         logging.info("\n%s", maze_map)
-        

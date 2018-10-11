@@ -13,7 +13,7 @@ class Config:
         number of run
         '''
 
-        self.EPOCH = 10
+        self.EPOCH = 100
 
         '''
         Save to CSV file

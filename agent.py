@@ -100,8 +100,8 @@ class Agent(threading.Thread):
         tmp_m = 0
         
         # x:i y:j a:k
-        for i in range(1,world.GRID.shape[0]-2):
-           for j in range(1,world.GRID.shape[1]-2):
+        for i in range(1,world.GRID.shape[0]-1):
+           for j in range(1,world.GRID.shape[1]-1):
                #マップチップ番号は0=路,1=壁なので注意(高桑さんのデータとは違う)
                 try:
                    tmp_f = world.GRID[j-1][i-1]
