@@ -19,7 +19,7 @@ import environment
 import graph
 import make_maze
 import world
-
+import sys
 DEBUG_MODE = 0
 
 if __name__ == '__main__':
@@ -28,7 +28,10 @@ if __name__ == '__main__':
     
     if DEBUG_MODE == 0:
         logging.info('MAIN_MODE!')
+        args = sys.argv
         epoch = config.Config().EPOCH
+        if len(args) == 2:
+            epoch = int(args[1])
         logging.info("EPOCH:" + str(epoch))
         for i in range(1, epoch):
             mazes = make_maze.Make_maze()
