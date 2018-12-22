@@ -19,9 +19,16 @@ class Config:
         Save to CSV file
         '''
         
+        """
         self.Steps_filename = "/Users/takashi/Documents/knowledge/steps_1/step_"
         self.Qtable_filename = "/Users/takashi/Documents/knowledge/qtable_1/qtable_"
-
+        self.TSteps_filename = "/Users/takashi/Documents/knowledge/Tsteps_1/Tstep_"
+        self.TQtable_filename = "/Users/takashi/Documents/knowledge/Tqtable_1/qtable_"
+        """
+        self.Steps_filename = "/Users/takashi/Documents/knowledge/rated_maps/step/step_"
+        self.Qtable_filename = "/Users/takashi/Documents/knowledge/rated_maps/qtable/qtable_"
+        self.TSteps_filename = "/Users/takashi/Documents/knowledge/Tsteps_1/Tstep_"
+        self.TQtable_filename = "/Users/takashi/Documents/knowledge/Tqtable_1/qtable_"
         '''
         Setup parameters of this simulation.
         If you select the '2' as DIMENSION, grid world

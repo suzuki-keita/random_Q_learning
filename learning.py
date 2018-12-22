@@ -16,6 +16,8 @@ import environment
 
 import scipy
 import numpy
+import glob
+import csv
 
 class Learning:
 
@@ -27,6 +29,7 @@ class Learning:
         In this example, thrird and fourth argument is dammy. For memmory test, we are researved 100.
         You can ignore this 100, and normally you can put the zero in the third and fourth argument.
         '''
+        #POLICY:x,y,?,?,action ※ ? = 使われていない配列番号
         self.POLICY = scipy.zeros((world.GRID.shape[0],world.GRID.shape[1],1,1,5)) # Declaration of the policy space
         self.STATE = [world.START[0], world.START[1]]                            # Current coordinates (x, y)
         self.OLD_STATE = [world.START[0], world.START[1]]                        # Old coordinates
@@ -41,10 +44,16 @@ class Learning:
         '''
         if self.config.LEARNING_MODE == 1:       # When not transfer
             self.REUSEPOLICY = 0
-        elif self.config.LEARNING_MODE == 2:     # Which menas transfer learning is selected
-            self.fileTransfer = "./policies/qtable_" + "%d"%self.config.POLICY_NUMBER + ".npz"
-            self.loadingPolicy = numpy.load(self.fileTransfer)
-            self.REUSEPOLICY = self.loadingPolicy['savedPolicy']
+        elif self.config.LEARNING_MODE == 2:  # Which means transfer learning is selected
+            #転移元の知識を選択
+            csvfiles = glob.glob("/Users/takashi/Documents/knowledge/qtable_1/qtable_*")
+            self.REUSEPOLICY = scipy.zeros((world.GRID.shape[0],world.GRID.shape[1],1,1,5))
+            for csvpath in csvfiles:
+                with open(csvpath, 'r') as o:
+                    dataReader = csv.reader(o)
+                    for row in dataReader:
+                        self.REUSEPOLICY[int(row[0])][int(row[1])][0][0][int(row[2])] = float(row[3])
+            
 
     '''
     Execute the action based on numerical data without stay action.
@@ -229,3 +238,7 @@ class Learning:
         maxQact = self.argMaxQ(state, policy, 5)
         TDerror = self.config.DISCOUNT_RATE[num] * policy[state[0]][state[1]][0][0][maxQact] - policy[old_state[0]][old_state[1]][0][0][act[0]]
         policy[old_state[0]][old_state[1]][0][0][act[0]] = policy[old_state[0]][old_state[1]][0][0][act[0]] + self.config.LEARNING_RATE[num] * (reward + TDerror)
+
+    def reusepolicy_reader(self, filedir):
+        files = glob.glob(filedir)
+        

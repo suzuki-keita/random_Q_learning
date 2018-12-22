@@ -239,8 +239,11 @@ class Agent(threading.Thread):
             """
         # Second call is Transfer Learning
         elif self.config.LEARNING_MODE == 2:
-            fileStepsTL = "./target/steps_" + self.POLNUM + "_" + self.DATE + ".csv"
-            fileQtableTL = "./target/qtable_" + self.POLNUM + "_" + self.DATE + ".csv"
+            fileStepsTL = r"" + self.config.TSteps_filename + self.POLNUM + "_" + self.DATE + ".csv"
+            fileQtableTL = r"" + self.config.TQtable_filename + self.POLNUM + "_" + self.DATE + ".csv"
+            logging.info("filename:" + fileQtableTL)
+            self.config.POLICY_NUMBER = self.config.POLICY_NUMBER + 1
+            self.POLNUM = ("%d" % self.config.POLICY_NUMBER)
             logging.info('Transfer learning (Target task) start')
             self.learner(1)
             logging.info('Target task is terminated')
